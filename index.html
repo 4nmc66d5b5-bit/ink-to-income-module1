@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ink to Income — Module 1 Tutor</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0f1e35;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+  .wrap{width:100%;max-width:700px}
+
+  /* BRAND HEADER */
+  .brand-bar{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(217,183,121,0.2)}
+  .brand-logo{width:44px;height:44px;border-radius:50%;background:#F7CEDB;display:flex;align-items:center;justify-content:center;border:2px solid #D9B779;flex-shrink:0;font-size:20px}
+  .brand-meta .course{font-size:10px;color:#8a9ab5;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+  .brand-meta .lesson{font-size:15px;font-weight:600;color:#FBF6F1}
+  .mod-badge{margin-left:auto;background:#F7CEDB;color:#7a3050;font-size:10px;font-weight:600;padding:4px 12px;border-radius:20px;letter-spacing:.05em;white-space:nowrap}
+
+  /* SLIDE SCREEN */
+  .screen{background:#1B2A4A;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;margin-bottom:12px;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+  .pstrip{height:3px;background:rgba(255,255,255,0.08)}
+  .pfill{height:3px;background:#D9B779;width:0%;transition:width .4s}
+  .sbody{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem 2rem;text-align:center;position:relative;min-height:260px}
+  .sbadge{background:#F7CEDB;color:#7a3050;font-size:10px;font-weight:600;padding:4px 12px;border-radius:20px;letter-spacing:.06em;margin-bottom:10px;display:inline-block}
+  .shook{font-size:11px;color:#D9B779;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .shead{font-size:22px;font-weight:600;color:#FBF6F1;line-height:1.3;margin-bottom:8px;transition:opacity .2s}
+  .ssub{font-size:13px;color:#b8c4d4;line-height:1.6;max-width:460px}
+  .pill-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+  .pill{background:rgba(247,206,219,0.14);border:1px solid rgba(247,206,219,0.3);border-radius:20px;padding:4px 12px;font-size:11px;color:#F7CEDB}
+  .pill.no{background:rgba(217,183,121,0.1);border-color:rgba(217,183,121,0.28);color:#D9B779}
+  .ostag{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(217,183,121,0.16);border:1px solid rgba(217,183,121,0.35);border-radius:6px;padding:5px 14px;font-size:10px;color:#D9B779;white-space:nowrap;opacity:0;transition:opacity .5s;pointer-events:none}
+  .ostag.show{opacity:1}
+
+  /* CONTROLS */
+  .cbar{background:#111c30;padding:10px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .btn-play{background:#D9B779;border:none;border-radius:8px;color:#1B2A4A;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:opacity .15s}
+  .btn-play:hover{opacity:.85}
+  .btn-nav{background:transparent;border:1px solid rgba(217,183,121,0.35);border-radius:8px;color:#D9B779;font-size:12px;padding:7px 13px;cursor:pointer;white-space:nowrap;transition:background .15s}
+  .btn-nav:hover{background:rgba(217,183,121,0.1)}
+  .btn-nav:disabled{opacity:.3;cursor:not-allowed}
+  .dots{display:flex;gap:5px;align-items:center}
+  .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.18);cursor:pointer;transition:background .2s}
+  .dot.on{background:#D9B779}
+  .ctr{font-size:11px;color:#6b7a8f;margin-left:auto}
+
+  /* TUTOR CARD */
+  .tutor-card{background:#1B2A4A;border:1px solid rgba(217,183,121,0.25);border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+  .tc-top{background:#0f1e35;padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(217,183,121,0.15)}
+  .av{width:44px;height:44px;border-radius:50%;background:#1B2A4A;border:2px solid #D9B779;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .tc-name{font-size:14px;font-weight:600;color:#FBF6F1}
+  .tc-role{font-size:11px;color:#8a9ab5;margin-top:1px}
+  .sdots{display:flex;gap:4px;align-items:center;margin-top:4px}
+  .sd{width:5px;height:5px;border-radius:50%;background:#D9B779;opacity:.25;transition:opacity .2s}
+  .sd.a{opacity:1;animation:pulse 1.1s ease-in-out infinite}
+  .sd.a:nth-child(2){animation-delay:.2s}
+  .sd.a:nth-child(3){animation-delay:.4s}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.5);opacity:1}}
+  .slabel{font-size:10px;color:#8a9ab5;margin-left:5px}
+  .tcstatus{margin-left:auto;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,0.06)}
+  .tcstatus.live{color:#4ade80;background:rgba(74,222,128,0.1)}
+  .tcstatus.loading{color:#D9B779;background:rgba(217,183,121,0.1)}
+  .tcstatus.ready{color:#8a9ab5}
+  .tcstatus.err{color:#f87171;background:rgba(248,113,113,0.1)}
+
+  /* SCRIPT */
+  .script-box{padding:16px 20px;min-height:100px;border-left:3px solid #D9B779;margin:14px 16px}
+  .script-box p{font-size:15px;line-height:1.9;color:#FBF6F1;word-break:break-word}
+  .cur{display:inline-block;width:2px;height:1em;background:#D9B779;vertical-align:middle;animation:blink .9s steps(1) infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+  /* KEY INPUT */
+  .key-row{padding:10px 16px 12px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .key-label{font-size:11px;color:#8a9ab5;white-space:nowrap}
+  .key-in{flex:1;min-width:180px;background:#0f1e35;border:1px solid rgba(217,183,121,0.3);border-radius:8px;padding:7px 11px;font-size:12px;color:#FBF6F1}
+  .key-in::placeholder{color:#4a5a70}
+  .key-in:focus{outline:none;border-color:#D9B779}
+  .btn-save{background:rgba(217,183,121,0.2);border:1px solid rgba(217,183,121,0.4);border-radius:8px;color:#D9B779;font-size:12px;font-weight:600;padding:7px 14px;cursor:pointer;white-space:nowrap}
+  .btn-save:hover{background:rgba(217,183,121,0.3)}
+  .notice{margin:0 16px 10px;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.3);border-radius:8px;padding:8px 13px;font-size:12px;color:#4ade80;display:none}
+  .notice.warn{background:rgba(217,183,121,0.08);border-color:rgba(217,183,121,0.3);color:#D9B779}
+
+  /* SPEED */
+  .speed-row{padding:6px 16px 10px;display:flex;align-items:center;gap:10px;border-top:1px solid rgba(255,255,255,0.07)}
+  .speed-label{font-size:11px;color:#8a9ab5}
+  .speed-sel{background:#0f1e35;border:1px solid rgba(217,183,121,0.3);border-radius:6px;color:#D9B779;font-size:11px;padding:5px 8px;cursor:pointer}
+  .mute-btn{background:rgba(217,183,121,0.12);border:1px solid rgba(217,183,121,0.3);border-radius:6px;color:#D9B779;font-size:11px;padding:5px 11px;cursor:pointer}
+  .mute-btn:hover{background:rgba(217,183,121,0.22)}
+
+  /* TERMS */
+  .term-row{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px;border-top:1px solid rgba(255,255,255,0.07)}
+  .term{background:rgba(247,206,219,0.12);color:#F7CEDB;border-radius:20px;padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid rgba(247,206,219,0.25);transition:opacity .15s}
+  .term:hover{opacity:.75}
+
+  /* Q&A */
+  .qa-zone{padding:12px 16px 16px;border-top:1px solid rgba(255,255,255,0.07)}
+  .qa-label{font-size:10px;color:#8a9ab5;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+  .qa-row{display:flex;gap:8px}
+  .qa-in{flex:1;background:#0f1e35;border:1px solid rgba(217,183,121,0.3);border-radius:8px;padding:9px 13px;font-size:13px;color:#FBF6F1}
+  .qa-in::placeholder{color:#4a5a70}
+  .qa-in:focus{outline:none;border-color:#D9B779}
+  .btn-ask{background:#D9B779;border:none;border-radius:8px;color:#1B2A4A;font-size:13px;font-weight:600;padding:9px 16px;cursor:pointer;white-space:nowrap}
+  .btn-ask:disabled{opacity:.4;cursor:not-allowed}
+  .qa-resp{margin-top:10px;background:#0f1e35;border:1px solid rgba(217,183,121,0.2);border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.8;color:#FBF6F1;display:none}
+
+  /* FOOTER */
+  .footer{text-align:center;padding:14px 0 4px;font-size:10px;color:#3a4a60;letter-spacing:.04em}
+
+  @media(max-width:500px){
+    .shead{font-size:18px}
+    .sbody{padding:1.5rem 1rem}
+    .brand-bar{flex-wrap:wrap}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- BRAND HEADER -->
+  <div class="brand-bar">
+    <div class="brand-logo">🖊️</div>
+    <div class="brand-meta">
+      <div class="course">Ink to Income</div>
+      <div class="lesson">Module 1 · What is a Loan Signing Agent?</div>
+    </div>
+    <div class="mod-badge">Module 1</div>
+  </div>
+
+  <!-- SLIDE SCREEN -->
+  <div class="screen">
+    <div class="pstrip"><div class="pfill" id="pf"></div></div>
+    <div class="sbody">
+      <span class="sbadge" id="badge">Module 1 · Intro</span>
+      <div class="shook" id="hook" style="display:none">The myth, busted</div>
+      <div class="shead" id="head">What is a Loan Signing Agent?</div>
+      <div class="ssub" id="sub">Enter your ElevenLabs key below, then press Play to hear your human tutor.</div>
+      <div class="pill-row" id="pills"></div>
+      <div class="ostag" id="ostag"></div>
+    </div>
+    <div class="cbar">
+      <button class="btn-play" id="playBtn" onclick="onPlay()">▶ Play lesson</button>
+      <button class="btn-nav" id="prevBtn" onclick="go(cur-1)" disabled>← Prev</button>
+      <button class="btn-nav" id="nextBtn" onclick="go(cur+1)">Next →</button>
+      <div class="dots" id="dotRow"></div>
+      <span class="ctr" id="ctr">1 / 7</span>
+    </div>
+  </div>
+
+  <!-- TUTOR CARD -->
+  <div class="tutor-card">
+    <div class="tc-top">
+      <div class="av">🎓</div>
+      <div>
+        <div class="tc-name">Ink — Your Course Tutor</div>
+        <div class="tc-role">Loan Signing Specialist · Module 1</div>
+        <div class="sdots">
+          <div class="sd" id="d1"></div>
+          <div class="sd" id="d2"></div>
+          <div class="sd" id="d3"></div>
+          <span class="slabel" id="slabel">Ready to teach</span>
+        </div>
+      </div>
+      <span class="tcstatus ready" id="tcst">Standby</span>
+    </div>
+
+    <div class="script-box"><p id="scriptText">Your tutor's script will appear here — word by word — as each slide plays. Add your ElevenLabs key below for a real human voice.</p></div>
+
+    <div class="notice" id="notice"></div>
+
+    <div class="key-row">
+      <span class="key-label">🔑 ElevenLabs key:</span>
+      <input class="key-in" id="apiKey" type="password" placeholder="Paste your ElevenLabs API key (sk_...)"/>
+      <button class="btn-save" onclick="saveKey()">✓ Save</button>
+    </div>
+
+    <div class="speed-row">
+      <span class="speed-label">Speed:</span>
+      <select class="speed-sel" id="speedSel">
+        <option value="0.85">Slow</option>
+        <option value="1" selected>Normal</option>
+        <option value="1.15">Fast</option>
+      </select>
+      <button class="mute-btn" id="muteBtn" onclick="toggleMute()">🔊 Sound on</button>
+    </div>
+
+    <div class="term-row">
+      <button class="term" onclick="askT('Loan Signing Agent')">LSA</button>
+      <button class="term" onclick="askT('Closing Disclosure')">Closing Disclosure</button>
+      <button class="term" onclick="askT('Deed of Trust')">Deed of Trust</button>
+      <button class="term" onclick="askT('Right of Rescission')">Right of Rescission</button>
+      <button class="term" onclick="askT('HELOC')">HELOC</button>
+      <button class="term" onclick="askT('title company')">Title company</button>
+      <button class="term" onclick="askT('signing service')">Signing service</button>
+    </div>
+
+    <div class="qa-zone">
+      <div class="qa-label">Ask your tutor anything</div>
+      <div class="qa-row">
+        <input class="qa-in" id="qin" type="text" placeholder="e.g. How much can I earn per signing?" onkeydown="if(event.key==='Enter')askTutor()"/>
+        <button class="btn-ask" id="askBtn" onclick="askTutor()">Ask →</button>
+      </div>
+      <div class="qa-resp" id="qaResp"></div>
+    </div>
+  </div>
+
+  <div class="footer">Ink to Income · Mobile Notary Always · © Icesis Cruz · mobilenotaryalways.com</div>
+</div>
+
+<script>
+const SLIDES=[
+  {badge:"Module 1 · Intro",hook:"The myth, busted",head:"Most people think LSAs just stamp documents.",sub:"That's completely wrong.",pills:[],ostag:"Loan Signing Agents are the final step before funding.",script:"Most people think loan signing agents just stamp documents. That's completely wrong. A professional loan signing agent is actually the final professional borrowers see before their loan funds. You are not a stamp. You are the closer. And in this module, we're going to make sure you understand exactly what that means."},
+  {badge:"What is an LSA?",hook:"The definition",head:"A commissioned notary public who specializes in mortgage loan documents.",sub:"One credential. Multiple loan types. Constant demand.",pills:[{t:"Home purchases"},{t:"Refinances"},{t:"HELOCs"},{t:"Reverse mortgages"},{t:"Commercial loans"},{t:"SBA loans"}],ostag:"Professionalism matters.",script:"A Loan Signing Agent is a commissioned notary public who specializes in handling and notarizing mortgage and real estate loan documents. You are trained to facilitate home purchases, refinances, HELOCs, reverse mortgages, commercial loans, and SBA loans. One commission. Six income streams. That is the power of this specialty."},
+  {badge:"Your Role",hook:"What you actually do",head:"Verify. Witness. Notarize. Guide. Complete. Return.",sub:"Six duties. Every signing. No exceptions.",pills:[{t:"Verify identity"},{t:"Witness signatures"},{t:"Notarize documents"},{t:"Guide signers"},{t:"Ensure completion"},{t:"Return per instructions"}],ostag:"Accuracy = repeat business.",script:"Your job has six parts. First — verify the borrower's identity. Second — witness their signatures. Third — properly notarize the documents that require it. Fourth — guide signers through the process, page by page. Fifth — ensure every document is completed correctly. Sixth — return the package exactly as the lender or title company instructed. Every single time. No shortcuts."},
+  {badge:"Boundaries",hook:"What you are NOT",head:"Not an attorney. Not a lender. Not a financial advisor.",sub:"You cannot give legal advice or tell borrowers whether to sign.",pills:[{t:"Not an attorney",no:true},{t:"Not a lender",no:true},{t:"Not a financial advisor",no:true},{t:"Not a loan officer",no:true}],ostag:"Know your lane. Own your lane.",script:"Let's be crystal clear. You are not an attorney. You are not a lender. You are not a financial advisor or a loan officer. You cannot explain loan terms legally. You cannot give legal advice. You cannot tell borrowers whether they should sign. Stay in your lane — and your lane pays very well. Understanding this boundary protects you, the borrower, and your business."},
+  {badge:"Why LSAs Matter",hook:"The stakes",head:"One missed signature can delay funding.",sub:"One incorrect notarization can create major problems for everyone.",pills:[],ostag:"Loan Signing Agents are the final step before funding.",script:"Here is why accuracy is non-negotiable. One missed signature can delay funding by days. One incorrect notarization can create major legal and financial problems for the title company, the lender, and the borrower. Everyone at that closing table is depending on you to do it right the first time. That is the weight of this role. And it is also exactly why this role pays what it pays."},
+  {badge:"Who Hires You",hook:"Your clients",head:"Title companies hire agents who are reliable, professional, and calm.",sub:"Detail-oriented agents become the ones title companies call every time.",pills:[{t:"Reliable"},{t:"Professional"},{t:"Detail-oriented"},{t:"Calm under pressure"}],ostag:"Accuracy = repeat business.",script:"Title companies hire signing agents who show up, perform, and communicate clearly. They want someone reliable, professional, detail-oriented, and calm under pressure. When you return a clean package on time and answer your phone — you become their go-to agent. Repeat business is the foundation of a profitable signing practice. Your reputation is your marketing."},
+  {badge:"Module 1 · Complete",hook:"Lock this in",head:"You are the final professional before funding.",sub:"Protect that role with accuracy, professionalism, and pride.",pills:[],ostag:"Professionalism matters.",script:"Before we close Module 1, I want you to lock this in. You are the last professional a borrower sees before their loan funds. That is not a small thing. That is a position of trust. Protect it with accuracy, professionalism, and pride in your work. Welcome to Ink to Income. Let's build your signing business — together."}
+];
+
+let cur=0,playing=false,muted=false,elKey='',typeTimer=null,autoTimer=null,currentAudio=null;
+const VOICE_ID='21m00Tcm4TlvDq8ikWAM'; // Rachel
+
+function saveKey(){
+  const v=document.getElementById('apiKey').value.trim();
+  if(!v){showNotice('Paste your ElevenLabs API key first.','warn');return;}
+  elKey=v; showNotice('✓ Key saved! Hit Play to hear your human tutor.','ok');
+  setStatus('Ready','ready');
+}
+
+function showNotice(msg,type){
+  const n=document.getElementById('notice');
+  n.style.display='block'; n.textContent=msg;
+  n.className=type==='ok'?'notice':'notice warn';
+  setTimeout(()=>n.style.display='none',4000);
+}
+
+function buildDots(){
+  const r=document.getElementById('dotRow'); r.innerHTML='';
+  SLIDES.forEach((_,i)=>{
+    const d=document.createElement('div'); d.className='dot'+(i===0?' on':'');
+    d.onclick=()=>go(i); r.appendChild(d);
+  });
+}
+function setDots(i){document.querySelectorAll('.dot').forEach((d,j)=>d.classList.toggle('on',j===i));}
+function setSpeaking(on){
+  ['d1','d2','d3'].forEach(id=>{const e=document.getElementById(id);on?e.classList.add('a'):e.classList.remove('a');});
+  document.getElementById('slabel').textContent=on?'Speaking...':'Ready';
+}
+function setStatus(s,cls){const el=document.getElementById('tcst');el.textContent=s;el.className='tcstatus '+cls;}
+function toggleMute(){
+  muted=!muted;
+  if(muted&&window.speechSynthesis)window.speechSynthesis.cancel();
+  if(muted&&currentAudio){currentAudio.pause();}
+  document.getElementById('muteBtn').textContent=muted?'🔇 Muted':'🔊 Sound on';
+}
+
+function stopAll(){
+  clearTimeout(typeTimer);clearTimeout(autoTimer);
+  if(currentAudio){currentAudio.pause();currentAudio=null;}
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+  setSpeaking(false);setStatus('Standby','ready');
+}
+
+function typeScript(text){
+  clearTimeout(typeTimer);
+  const el=document.getElementById('scriptText'); el.innerHTML='';
+  const cursor=document.createElement('span'); cursor.className='cur'; el.appendChild(cursor);
+  let i=0;
+  function t(){if(i<text.length){cursor.insertAdjacentText('beforebegin',text[i]);i++;typeTimer=setTimeout(t,20);}else cursor.remove();}
+  t();
+}
+
+async function speakElevenLabs(text,onEnd){
+  setStatus('Loading...','loading'); setSpeaking(true);
+  try{
+    const rate=parseFloat(document.getElementById('speedSel').value);
+    const resp=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+VOICE_ID+'/stream',{
+      method:'POST',
+      headers:{'xi-api-key':elKey,'Content-Type':'application/json','Accept':'audio/mpeg'},
+      body:JSON.stringify({text,model_id:'eleven_turbo_v2_5',voice_settings:{stability:0.5,similarity_boost:0.85,style:0.3,use_speaker_boost:true,speed:rate}})
+    });
+    if(!resp.ok)throw new Error('ElevenLabs error '+resp.status);
+    const blob=await resp.blob();
+    const url=URL.createObjectURL(blob);
+    const audio=new Audio(url);
+    currentAudio=audio;
+    setStatus('Live','live');
+    audio.onended=()=>{setSpeaking(false);setStatus('Done','ready');URL.revokeObjectURL(url);if(onEnd)onEnd();};
+    audio.onerror=()=>{setSpeaking(false);setStatus('Error','err');if(onEnd)onEnd();};
+    if(!muted)audio.play(); else{setSpeaking(false);if(onEnd)onEnd();}
+  }catch(e){
+    showNotice('Voice error: '+e.message+'. Using browser voice.','warn');
+    setSpeaking(false);setStatus('Error','err');
+    fallbackSpeak(text,onEnd);
+  }
+}
+
+function fallbackSpeak(text,onEnd){
+  if(!window.speechSynthesis||muted){if(onEnd)onEnd();return;}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=parseFloat(document.getElementById('speedSel').value);
+  u.pitch=1.05;
+  const voices=speechSynthesis.getVoices();
+  const pick=voices.find(v=>v.name.includes('Samantha')||v.name.includes('Google US English')||v.name.includes('Karen'))||voices.find(v=>v.lang.startsWith('en'));
+  if(pick)u.voice=pick;
+  u.onend=()=>{setSpeaking(false);if(onEnd)onEnd();};
+  setSpeaking(true); setStatus('Live','live');
+  speechSynthesis.speak(u);
+}
+
+function doSpeak(text,onEnd){
+  if(muted){if(onEnd)onEnd();return;}
+  if(elKey)speakElevenLabs(text,onEnd); else fallbackSpeak(text,onEnd);
+}
+
+function showSlide(idx){
+  const s=SLIDES[idx];
+  document.getElementById('badge').textContent=s.badge;
+  document.getElementById('hook').textContent=s.hook;
+  const h=document.getElementById('head'); h.style.opacity='0';
+  setTimeout(()=>{h.textContent=s.head;h.style.opacity='1';},120);
+  document.getElementById('sub').textContent=s.sub;
+  const pr=document.getElementById('pills'); pr.innerHTML='';
+  (s.pills||[]).forEach(p=>{const sp=document.createElement('span');sp.className='pill'+(p.no?' no':'');sp.textContent=p.t;pr.appendChild(sp);});
+  const os=document.getElementById('ostag'); os.textContent=s.ostag; os.classList.remove('show');
+  setTimeout(()=>os.classList.add('show'),400);
+  document.getElementById('pf').style.width=(((idx+1)/SLIDES.length)*100)+'%';
+  document.getElementById('ctr').textContent=(idx+1)+' / '+SLIDES.length;
+  setDots(idx);
+  document.getElementById('prevBtn').disabled=(idx===0);
+  document.getElementById('nextBtn').disabled=(idx===SLIDES.length-1);
+  typeScript(s.script);
+  if(playing){
+    doSpeak(s.script,()=>{
+      if(playing){
+        if(idx<SLIDES.length-1){autoTimer=setTimeout(()=>{cur++;showSlide(cur);},1200);}
+        else{playing=false;updatePlayBtn();setStatus('Complete','ready');}
+      }
+    });
+  }
+}
+
+function go(idx){if(idx<0||idx>=SLIDES.length)return;stopAll();cur=idx;showSlide(cur);}
+function onPlay(){
+  playing=!playing; updatePlayBtn();
+  if(playing){stopAll();showSlide(cur);}
+  else stopAll();
+}
+function updatePlayBtn(){
+  document.getElementById('playBtn').textContent=playing?'⏸ Pause':'▶ Play lesson';
+}
+
+function askT(term){document.getElementById('qin').value='Explain what a '+term+' is in a loan signing context.';askTutor();}
+
+async function askTutor(){
+  const q=document.getElementById('qin').value.trim(); if(!q)return;
+  const btn=document.getElementById('askBtn'); const resp=document.getElementById('qaResp');
+  btn.disabled=true; btn.textContent='Thinking...';
+  resp.style.display='block'; resp.textContent='...';
+  const sys=`You are "Ink," the warm AI tutor for "Ink to Income," created by Icesis Cruz — a licensed real estate agent and mobile notary in San Diego, CA. You teach notaries how to specialize in loan signings. Module 1 topic. Tone: confident, warm, mentor-like. Plain language. 2-4 sentences max. No bullet points. No legal advice.`;
+  try{
+    const res=await fetch('/.netlify/functions/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:sys,messages:[{role:'user',content:q}]})});
+    const data=await res.json();
+    const answer=data.content?.[0]?.text||'Try rephrasing that!';
+    resp.textContent=''; let i=0;
+    function ta(){if(i<answer.length){resp.textContent+=answer[i];i++;setTimeout(ta,16);}else{doSpeak(answer,null);}}
+    ta();
+  }catch(e){resp.textContent='Connection issue — please try again.';}
+  btn.disabled=false; btn.textContent='Ask →';
+  document.getElementById('qin').value='';
+}
+
+if(window.speechSynthesis&&speechSynthesis.onvoiceschanged!==undefined)speechSynthesis.onvoiceschanged=()=>{};
+buildDots(); showSlide(0);
+</script>
+</body>
+</html>
