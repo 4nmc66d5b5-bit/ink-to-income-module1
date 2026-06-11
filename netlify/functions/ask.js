@@ -29,3 +29,4 @@ exports.handler = async (event) => {
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
 };
+Then click "Commit changes" — do the same for Module 2's ask.js. Netlify redeploys and Q&A will work!Sonnet 4.6 Medium
